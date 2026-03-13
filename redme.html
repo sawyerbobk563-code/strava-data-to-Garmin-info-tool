@@ -1,0 +1,1931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GarminStats — Setup Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Barlow+Condensed:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:       #080b0f;
+    --surface:  #0d1117;
+    --s2:       #111820;
+    --s3:       #161d27;
+    --border:   #1c2636;
+    --border2:  #243040;
+    --text:     #dce6f0;
+    --muted:    #5a6e85;
+    --muted2:   #8a9bb0;
+    --cyan:     #00e5ff;
+    --orange:   #FC4C02;
+    --green:    #2ed573;
+    --yellow:   #f5a623;
+    --red:      #ff4757;
+    --purple:   #a855f7;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── BACKGROUND GRID ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,.03) 1px, transparent 1px);
+    background-size: 44px 44px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── GLOW ── */
+  .glow-top {
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(0,229,255,.06) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── LAYOUT ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    max-width: 1160px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 48px 0 32px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    margin-bottom: 40px;
+  }
+
+  .sidebar-logo-mark {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 22px;
+    letter-spacing: 3px;
+    line-height: 1;
+    color: var(--text);
+  }
+
+  .sidebar-logo-mark span { color: var(--cyan); }
+
+  .sidebar-logo-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    color: var(--muted);
+    margin-top: 5px;
+  }
+
+  .nav-section {
+    margin-bottom: 28px;
+  }
+
+  .nav-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2.5px;
+    color: var(--muted);
+    padding: 0 0 8px 0;
+    text-transform: uppercase;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 6px 10px 6px 0;
+    color: var(--muted2);
+    text-decoration: none;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    border-left: 2px solid transparent;
+    padding-left: 12px;
+    margin-left: -2px;
+    transition: all .18s;
+    position: relative;
+  }
+
+  .nav-link:hover { color: var(--text); border-left-color: var(--border2); }
+  .nav-link.active { color: var(--cyan); border-left-color: var(--cyan); }
+
+  .nav-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    padding: 48px 40px 120px 48px;
+    min-width: 0;
+  }
+
+  /* ── PAGE HEADER ── */
+  .page-header {
+    margin-bottom: 60px;
+    animation: fadeUp .5s ease both;
+  }
+
+  .page-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--cyan);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .page-eyebrow::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--cyan);
+  }
+
+  .page-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 54px;
+    letter-spacing: 2px;
+    line-height: .95;
+    color: var(--text);
+    margin-bottom: 16px;
+  }
+
+  .page-title span { color: var(--cyan); }
+
+  .page-desc {
+    font-size: 15px;
+    color: var(--muted2);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  /* ── OVERVIEW PILLS ── */
+  .overview-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 24px;
+  }
+
+  .pill {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    border: 1px solid;
+  }
+
+  .pill-cyan  { background: rgba(0,229,255,.07);  border-color: rgba(0,229,255,.25);  color: var(--cyan); }
+  .pill-orange{ background: rgba(252,76,2,.07);   border-color: rgba(252,76,2,.25);   color: var(--orange); }
+  .pill-green { background: rgba(46,213,115,.07); border-color: rgba(46,213,115,.25); color: var(--green); }
+
+  /* ── SECTION ── */
+  .section {
+    margin-bottom: 72px;
+    animation: fadeUp .5s ease both;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    margin-bottom: 32px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 900;
+    font-size: 64px;
+    line-height: 1;
+    color: var(--border2);
+    min-width: 48px;
+    margin-top: -6px;
+  }
+
+  .section-meta { flex: 1; }
+
+  .section-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.5px;
+    letter-spacing: 2px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .tag-garmin { background: rgba(0,229,255,.08); border: 1px solid rgba(0,229,255,.2); color: var(--cyan); }
+  .tag-strava { background: rgba(252,76,2,.08);  border: 1px solid rgba(252,76,2,.2);  color: var(--orange); }
+  .tag-tools  { background: rgba(168,85,247,.08);border: 1px solid rgba(168,85,247,.2);color: var(--purple); }
+
+  .section-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 800;
+    font-size: 28px;
+    letter-spacing: 1.5px;
+    color: var(--text);
+    line-height: 1.1;
+  }
+
+  .section-desc {
+    font-size: 13.5px;
+    color: var(--muted2);
+    margin-top: 6px;
+    max-width: 600px;
+  }
+
+  /* ── STEPS ── */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 0 20px;
+    position: relative;
+  }
+
+  .step:not(:last-child) .step-line {
+    position: absolute;
+    left: 19px;
+    top: 40px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--border2), transparent);
+  }
+
+  .step-num-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 8px;
+  }
+
+  .step-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border2);
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted2);
+    flex-shrink: 0;
+    z-index: 1;
+    position: relative;
+    transition: all .2s;
+  }
+
+  .step:hover .step-circle {
+    border-color: var(--cyan);
+    color: var(--cyan);
+    background: rgba(0,229,255,.06);
+  }
+
+  .step-body { padding: 4px 0 28px 0; }
+
+  .step-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 17px;
+    letter-spacing: 1px;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+
+  .step-desc {
+    font-size: 13.5px;
+    color: var(--muted2);
+    margin-bottom: 14px;
+    line-height: 1.65;
+  }
+
+  .step-desc a { color: var(--cyan); text-decoration: none; }
+  .step-desc a:hover { text-decoration: underline; }
+
+  .step-desc code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11.5px;
+    background: var(--s3);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: var(--cyan);
+  }
+
+  .step-note {
+    display: flex;
+    gap: 9px;
+    padding: 10px 14px;
+    background: rgba(245,166,35,.06);
+    border: 1px solid rgba(245,166,35,.2);
+    border-radius: 8px;
+    font-size: 12.5px;
+    color: #c9a04a;
+    margin-top: 10px;
+    line-height: 1.55;
+  }
+
+  .step-note-icon { flex-shrink: 0; font-size: 14px; margin-top: 1px; }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+  }
+
+  .code-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 14px;
+    background: var(--s2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .code-dots { display: flex; gap: 5px; }
+  .code-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+  }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #ffbd2e; }
+  .dot-g { background: #28ca41; }
+
+  .code-filename {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10.5px;
+    color: var(--muted2);
+    letter-spacing: .5px;
+  }
+
+  .code-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .code-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 9px;
+    cursor: pointer;
+    transition: all .18s;
+  }
+
+  .code-toggle-btn:hover { color: var(--text); border-color: var(--border2); }
+
+  .code-toggle-btn svg {
+    transition: transform .22s;
+    flex-shrink: 0;
+  }
+
+  .code-toggle-btn.expanded svg { transform: rotate(180deg); }
+
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 3px 9px;
+    cursor: pointer;
+    transition: all .18s;
+  }
+
+  .copy-btn:hover { color: var(--cyan); border-color: rgba(0,229,255,.35); }
+  .copy-btn.copied { color: var(--green); border-color: rgba(46,213,115,.35); }
+
+  .code-preview {
+    position: relative;
+  }
+
+  .code-preview pre {
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--text);
+    overflow-x: auto;
+    max-height: 180px;
+    overflow-y: hidden;
+    white-space: pre;
+  }
+
+  .code-fade {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 72px;
+    background: linear-gradient(to bottom, transparent, var(--surface));
+    pointer-events: none;
+  }
+
+  .code-expanded-body {
+    display: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .code-expanded-body.open { display: block; }
+
+  .code-expanded-body pre {
+    padding: 14px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.65;
+    color: var(--text);
+    overflow-x: auto;
+    white-space: pre;
+    max-height: 560px;
+    overflow-y: auto;
+  }
+
+  /* Syntax colors */
+  .kw  { color: #c792ea; }
+  .fn  { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .cmt { color: #546e7a; font-style: italic; }
+  .num { color: #f78c6c; }
+  .cls { color: #ffcb6b; }
+  .op  { color: #89ddff; }
+
+  /* ── INLINE CODE BADGE ── */
+  .badge-cmd {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--s2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 12px 4px 10px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--cyan);
+    margin: 4px 0;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 64px 0;
+  }
+
+  /* ── PREREQS CARD ── */
+  .prereqs-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .prereq-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: border-color .2s;
+  }
+
+  .prereq-card:hover { border-color: var(--border2); }
+
+  .prereq-icon {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .prereq-name {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+
+  .prereq-desc {
+    font-size: 12px;
+    color: var(--muted2);
+    line-height: 1.5;
+  }
+
+  /* ── ANIM ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section:nth-child(2) { animation-delay: .1s; }
+  .section:nth-child(3) { animation-delay: .2s; }
+  .section:nth-child(4) { animation-delay: .3s; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; padding: 24px; flex-direction: row; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--border); }
+    .sidebar-logo { margin-bottom: 0; width: 100%; }
+    .nav-section { margin-bottom: 0; }
+    .main { padding: 32px 20px 80px; }
+    .prereqs-grid { grid-template-columns: 1fr 1fr; }
+    .page-title { font-size: 38px; }
+  }
+</style>
+</head>
+<body>
+<div class="glow-top"></div>
+
+<div class="layout">
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-mark">GARMIN<span>STATS</span></div>
+      <div class="sidebar-logo-sub">// SETUP GUIDE</div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Overview</div>
+      <a href="#prerequisites" class="nav-link">
+        <span class="nav-dot" style="background:var(--muted)"></span>Prerequisites
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Scripts</div>
+      <a href="#garmin-downloader" class="nav-link active">
+        <span class="nav-dot" style="background:var(--cyan)"></span>Garmin Downloader
+      </a>
+      <a href="#strava-uploader" class="nav-link">
+        <span class="nav-dot" style="background:var(--orange)"></span>Strava Uploader
+      </a>
+      <a href="#visibility-changer" class="nav-link">
+        <span class="nav-dot" style="background:var(--purple)"></span>Visibility Changer
+      </a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-label">Help</div>
+      <a href="#troubleshooting" class="nav-link">
+        <span class="nav-dot" style="background:var(--muted)"></span>Troubleshooting
+      </a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- PAGE HEADER -->
+    <div class="page-header" id="overview">
+      <div class="page-eyebrow">SETUP GUIDE</div>
+      <h1 class="page-title">GARMIN<span>STATS</span><br>TOOLKIT</h1>
+      <p class="page-desc">Three Python scripts that run entirely in Google Colab — no installation, no server. Download your Garmin activities, upload them to Strava, and manage visibility in bulk.</p>
+      <div class="overview-pills">
+        <span class="pill pill-cyan">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          GARMIN DOWNLOADER
+        </span>
+        <span class="pill pill-orange">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          STRAVA UPLOADER
+        </span>
+        <span class="pill pill-green">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83"/></svg>
+          VISIBILITY CHANGER
+        </span>
+      </div>
+    </div>
+
+    <!-- PREREQUISITES -->
+    <div class="section" id="prerequisites">
+      <div class="section-header">
+        <div class="section-num">00</div>
+        <div class="section-meta">
+          <div class="section-tag tag-garmin">// BEFORE YOU START</div>
+          <h2 class="section-title">PREREQUISITES</h2>
+          <p class="section-desc">Everything you need before running the scripts. All three run in Google Colab — nothing to install locally.</p>
+        </div>
+      </div>
+      <div class="prereqs-grid">
+        <div class="prereq-card">
+          <div class="prereq-icon">🧪</div>
+          <div class="prereq-name">GOOGLE ACCOUNT</div>
+          <div class="prereq-desc">Needed to open and run Google Colab notebooks in your browser.</div>
+        </div>
+        <div class="prereq-card">
+          <div class="prereq-icon">⌚</div>
+          <div class="prereq-name">GARMIN CONNECT</div>
+          <div class="prereq-desc">An active Garmin Connect account with your activity history. Email + password required.</div>
+        </div>
+        <div class="prereq-card">
+          <div class="prereq-icon">🏃</div>
+          <div class="prereq-name">STRAVA ACCOUNT</div>
+          <div class="prereq-desc">Required for the Uploader and Visibility Changer. A free account works fine.</div>
+        </div>
+        <div class="prereq-card">
+          <div class="prereq-icon">🔑</div>
+          <div class="prereq-name">STRAVA API APP</div>
+          <div class="prereq-desc">Free to create at strava.com/settings/api. Takes about 2 minutes. See script instructions for details.</div>
+        </div>
+        <div class="prereq-card">
+          <div class="prereq-icon">📁</div>
+          <div class="prereq-name">SCRIPT FILES</div>
+          <div class="prereq-desc">Download all three <code style="font-family:monospace;font-size:11px;color:var(--cyan)">.py</code> files and upload them to your Colab session.</div>
+        </div>
+        <div class="prereq-card">
+          <div class="prereq-icon">⏱️</div>
+          <div class="prereq-name">TIME</div>
+          <div class="prereq-desc">Downloading and uploading hundreds of activities can take 30–90 minutes. Colab has a 90 min idle timeout.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- SCRIPT 1: GARMIN DOWNLOADER -->
+    <div class="section" id="garmin-downloader">
+      <div class="section-header">
+        <div class="section-num">01</div>
+        <div class="section-meta">
+          <div class="section-tag tag-garmin">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            GARMIN_DOWNLOAD.PY
+          </div>
+          <h2 class="section-title">GARMIN DOWNLOADER</h2>
+          <p class="section-desc">Logs into your Garmin Connect account and downloads every running activity — FIT, GPX, TCX files plus metadata JSON. Saves everything into organized folders in Colab.</p>
+        </div>
+      </div>
+
+      <div class="steps">
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">OPEN GOOGLE COLAB</div>
+            <p class="step-desc">Go to <a href="https://colab.research.google.com" target="_blank">colab.research.google.com</a> and create a new notebook, or open an existing one. Sign in with your Google account if prompted.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">UPLOAD THE SCRIPT</div>
+            <p class="step-desc">In the left sidebar, click the <strong>Files</strong> icon (📁), then the upload icon at the top. Upload <code>garmin_download.py</code> to your Colab session.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">INSTALL DEPENDENCIES</div>
+            <p class="step-desc">In a new Colab cell, run the install command. This only needs to be done once per session.</p>
+            <div class="code-block">
+              <div class="code-bar">
+                <div class="code-bar-left">
+                  <div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div>
+                  <span class="code-filename">colab cell</span>
+                </div>
+                <div class="code-bar-right">
+                  <button class="copy-btn" onclick="copyCode(this, '!pip install garminconnect garth --quiet')">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    COPY
+                  </button>
+                </div>
+              </div>
+              <div class="code-preview">
+                <pre><span class="op">!</span><span class="fn">pip</span> install garminconnect garth <span class="op">--quiet</span></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">4</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">RUN THE SCRIPT</div>
+            <p class="step-desc">In another cell, use <code>%run</code> to execute the script. A styled login screen will appear in the cell output.</p>
+            <div class="code-block">
+              <div class="code-bar">
+                <div class="code-bar-left">
+                  <div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div>
+                  <span class="code-filename">colab cell</span>
+                </div>
+                <div class="code-bar-right">
+                  <button class="copy-btn" onclick="copyCode(this, '%run garmin_download.py')">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    COPY
+                  </button>
+                </div>
+              </div>
+              <div class="code-preview">
+                <pre><span class="op">%</span><span class="fn">run</span> garmin_download.py</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">5</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">LOG IN TO GARMIN CONNECT</div>
+            <p class="step-desc">A login card will appear. Scroll down past it — you'll see text input fields for your <strong>email</strong> and <strong>password</strong>. Enter your Garmin Connect credentials. The password field is hidden as you type.</p>
+            <div class="step-note">
+              <span class="step-note-icon">💾</span>
+              <span>After the first login, session tokens are cached to <code>/content/garmin_tokens</code>. On repeat runs, the login screen is skipped automatically — no password needed again.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">6</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">ENTER MFA CODE (IF PROMPTED)</div>
+            <p class="step-desc">Garmin may send a verification code to your email or phone. If prompted, check your inbox and enter the code in the field that appears below the <code>▼▼▼</code> markers.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">7</div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">WAIT FOR DOWNLOADS TO COMPLETE</div>
+            <p class="step-desc">The script fetches your full activity list then downloads FIT, GPX, TCX files and metadata JSON for each run. Progress is shown for every activity. When done, all files are saved to <code>/content/GarminActivities/</code>.</p>
+            <div class="step-note">
+              <span class="step-note-icon">⚠️</span>
+              <span>Google Colab has a 90 minute idle timeout. For very large libraries (500+ runs), keep the tab active. If it disconnects, re-run — already downloaded activities are safely preserved.</span>
+            </div>
+
+            <!-- FULL SCRIPT -->
+            <div class="code-block" style="margin-top:14px">
+              <div class="code-bar">
+                <div class="code-bar-left">
+                  <div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div>
+                  <span class="code-filename">garmin_download.py</span>
+                </div>
+                <div class="code-bar-right">
+                  <button class="code-toggle-btn" id="tog-garmin" onclick="toggleCode('garmin-full','tog-garmin')">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    EXPAND
+                  </button>
+                  <button class="copy-btn" id="copy-garmin" onclick="copyScriptById(this, 'garmin-full-code')">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    COPY ALL
+                  </button>
+                </div>
+              </div>
+              <div class="code-preview">
+                <pre><span class="cmt"># ─── CELL 1: Install ───────────────────────────────────</span>
+<span class="cmt"># !pip install garminconnect garth --quiet</span>
+
+<span class="cmt"># ─── CELL 2: Imports & Config ──────────────────────────</span>
+<span class="kw">import</span> json, time, zipfile
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> getpass <span class="kw">import</span> getpass
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+<span class="kw">from</span> IPython.display <span class="kw">import</span> display, HTML</pre>
+                <div class="code-fade"></div>
+              </div>
+              <div class="code-expanded-body" id="garmin-full">
+                <pre id="garmin-full-code">"""
+╔══════════════════════════════════════════════════════════════════╗
+║         GARMIN CONNECT → RUNNING ACTIVITIES DOWNLOADER          ║
+║                    Google Colab Edition  (v3 — login screen)    ║
+╚══════════════════════════════════════════════════════════════════╝
+
+SETUP:
+  1. In a Colab cell, run:  !pip install garminconnect garth --quiet
+  2. Then run this script — a login screen will appear.
+     Already logged in this session? Tokens are cached and the
+     login screen is skipped automatically.
+"""
+
+# ─── CELL 1: Install ─────────────────────────────────────────────────────────
+# !pip install garminconnect garth --quiet
+
+# ─── CELL 2: Imports & Config ────────────────────────────────────────────────
+import json, time, zipfile
+from datetime import datetime
+from getpass import getpass
+from pathlib import Path
+from IPython.display import display, HTML
+
+try:
+    import garminconnect
+except ImportError:
+    raise ImportError("Run: !pip install garminconnect garth --quiet")
+
+OUTPUT_DIR = Path("/content/GarminActivities")
+TOKENSTORE = Path("/content/garmin_tokens")
+BATCH_SIZE    = 100
+DELAY_BETWEEN = 0.6
+
+RUNNING_TYPE_KEYS = {
+    "running", "trail_running", "treadmill_running", "indoor_running",
+    "virtual_run", "obstacle_run", "street_running", "track_running",
+    "ultra_run", "run",
+}
+
+# ─── CELL 3: Authenticate ────────────────────────────────────────────────────
+def _prompt_mfa():
+    print("\n" + "▼"*56)
+    print("  GARMIN SENT A VERIFICATION CODE TO YOUR EMAIL / PHONE")
+    print("▼"*56)
+    return input("  Enter the MFA code here: ").strip()
+
+def show_login_screen():
+    display(HTML("""
+    <div style="font-family:monospace;background:#0a0c10;border:2px solid #00e5ff;
+                border-radius:14px;padding:26px 28px;max-width:480px;color:#e8edf5">
+      <div style="font-size:18px;font-weight:900;letter-spacing:3px;color:#e8edf5;margin-bottom:20px">
+        GARMIN<span style="color:#00e5ff">STATS</span>
+        <span style="font-size:10px;letter-spacing:2px;color:#5a6478;display:block;margin-top:4px">// CONNECT DOWNLOADER</span>
+      </div>
+      <div style="background:#111318;border:1px solid #1e2530;border-radius:10px;padding:14px;margin-bottom:10px">
+        <div style="font-size:10px;letter-spacing:2px;color:#00e5ff;margin-bottom:4px">EMAIL</div>
+        <div style="font-size:12px;color:#8a95a8">Enter your Garmin Connect email below &#9660;</div>
+      </div>
+      <div style="background:#111318;border:1px solid #1e2530;border-radius:10px;padding:14px;margin-bottom:16px">
+        <div style="font-size:10px;letter-spacing:2px;color:#00e5ff;margin-bottom:4px">PASSWORD</div>
+        <div style="font-size:12px;color:#8a95a8">Enter your Garmin Connect password below &#9660;<br>
+          <span style="color:#5a6478;font-size:10px">(hidden as you type via getpass)</span></div>
+      </div>
+      <div style="font-size:10px;color:#5a6478;line-height:1.6">
+        &#128274; Credentials are used only to authenticate. Never stored — session tokens cached instead.
+      </div>
+    </div>"""))
+    print("\n" + "▼"*56)
+    print("  GARMIN CONNECT LOGIN — ENTER CREDENTIALS BELOW")
+    print("▼"*56)
+    email    = input("  Email    → ").strip()
+    password = getpass("  Password → ")
+    print("▼"*56 + "\n")
+    return email, password
+
+def authenticate():
+    if TOKENSTORE.exists():
+        try:
+            print("🔑 Found cached tokens — attempting fast login …")
+            client = garminconnect.Garmin()
+            client.login(str(TOKENSTORE))
+            print(f"✅ Logged in as: {client.get_full_name()}  (cached)")
+            return client
+        except Exception as e:
+            print(f"⚠️  Cache expired ({e}) — showing login screen …\n")
+    email, password = show_login_screen()
+    if not email or not password:
+        raise ValueError("❌ Email and password are required.")
+    print("🔐 Connecting to Garmin Connect …")
+    client = garminconnect.Garmin(email=email, password=password,
+                                   is_cn=False, prompt_mfa=_prompt_mfa)
+    try:
+        client.login()
+    except garminconnect.GarminConnectAuthenticationError as exc:
+        print(f"\n⚠️  Garmin requires verification: {exc}")
+        mfa = input("  MFA code → ").strip()
+        if mfa:
+            client.resume_login(mfa)
+        else:
+            raise RuntimeError("Login failed — no MFA code entered.") from exc
+    try:
+        TOKENSTORE.mkdir(parents=True, exist_ok=True)
+        client.garth.dump(str(TOKENSTORE))
+        print(f"💾 Tokens cached → {TOKENSTORE}")
+    except Exception as e:
+        print(f"⚠️  Could not cache tokens: {e}")
+    print(f"✅ Logged in as: {client.get_full_name()}")
+    return client
+
+# ─── CELL 4: Fetch + Download ────────────────────────────────────────────────
+def fetch_all_running_activities(client):
+    print("\n📋 Fetching running activity list …")
+    all_activities, start = [], 0
+    while True:
+        batch = client.get_activities(start, BATCH_SIZE)
+        if not batch:
+            break
+        running = [a for a in batch if a.get("activityType", {}).get("typeKey", "").lower()
+                   in RUNNING_TYPE_KEYS]
+        all_activities.extend(running)
+        print(f"  scanned {start + len(batch)} total | {len(all_activities)} running", end="\r")
+        if len(batch) < BATCH_SIZE:
+            break
+        start += BATCH_SIZE
+        time.sleep(DELAY_BETWEEN)
+    print(f"\n✅ Found {len(all_activities)} running activities\n")
+    return all_activities
+
+def download_activity(client, activity, base_dir):
+    import zipfile
+    aid   = activity["activityId"]
+    name  = activity.get("activityName", "Unnamed Run")
+    start = activity.get("startTimeLocal", "unknown")
+    safe  = "".join(c if c.isalnum() or c in " _-" else "_" for c in name)[:50]
+    folder = base_dir / f"{start[:10]}_{aid}_{safe}"
+    folder.mkdir(parents=True, exist_ok=True)
+    result = {"activity_id": aid, "name": name, "start_time": start,
+              "folder": str(folder), "files": {}, "errors": []}
+    def save_json(key, fn):
+        try:
+            path = folder / f"{key}.json"
+            with open(path, "w") as f: json.dump(fn(), f, indent=2)
+            result["files"][key] = str(path)
+        except Exception as e: result["errors"].append(f"{key}: {e}")
+    def save_binary(key, ext, fn):
+        try:
+            path = folder / f"{aid}.{ext}"
+            with open(path, "wb") as f: f.write(fn())
+            result["files"][key] = str(path)
+        except Exception as e: result["errors"].append(f"{key}: {e}")
+    save_json("metadata", lambda: activity)
+    save_json("details",  lambda: client.get_activity_details(aid))
+    save_json("hr_zones", lambda: client.get_activity_hr_in_timezones(aid))
+    try:
+        raw = client.download_activity(aid, dl_fmt=client.ActivityDownloadFormat.ORIGINAL)
+        zip_path = folder / f"{aid}.zip"
+        zip_path.write_bytes(raw)
+        with zipfile.ZipFile(zip_path) as zf:
+            for member in zf.namelist():
+                if member.lower().endswith(".fit"):
+                    fit_path = folder / f"{aid}.fit"
+                    fit_path.write_bytes(zf.read(member))
+                    result["files"]["fit"] = str(fit_path)
+                    break
+        zip_path.unlink(missing_ok=True)
+    except Exception as e: result["errors"].append(f"fit: {e}")
+    save_binary("gpx", "gpx", lambda: client.download_activity(aid, dl_fmt=client.ActivityDownloadFormat.GPX))
+    save_binary("tcx", "tcx", lambda: client.download_activity(aid, dl_fmt=client.ActivityDownloadFormat.TCX))
+    return result
+
+def main():
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    client     = authenticate()
+    activities = fetch_all_running_activities(client)
+    if not activities:
+        print("⚠️  No running activities found.")
+        return
+    print(f"⬇️  Downloading {len(activities)} activities → {OUTPUT_DIR}\n{'─'*70}")
+    results, ok, err = [], 0, 0
+    for i, activity in enumerate(activities, 1):
+        dist = round(activity.get("distance", 0) / 1000, 2)
+        print(f"[{i:>4}/{len(activities)}] {activity.get('startTimeLocal','?')[:10]} | "
+              f"{activity.get('activityName','Run')[:35]:<35} | {dist:>6.2f} km", end="  … ")
+        try:
+            r = download_activity(client, activity, OUTPUT_DIR)
+            results.append(r)
+            if r["errors"]: print(f"⚠️  ({r['errors'][0]})"); err += 1
+            else: print("✅"); ok += 1
+        except Exception as e:
+            print(f"❌ {e}"); err += 1
+        time.sleep(DELAY_BETWEEN)
+    index_path = OUTPUT_DIR / "download_index.json"
+    index_path.write_text(json.dumps({
+        "downloaded_at": datetime.now().isoformat(),
+        "total": len(activities), "success": ok, "errors": err, "activities": results,
+    }, indent=2))
+    print(f"\n{'─'*70}")
+    print(f"🏁 Done!  ✅ {ok} clean  |  ⚠️ {err} with partial errors")
+    print(f"📁 {OUTPUT_DIR}")
+
+if __name__ == "__main__":
+    main()</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- SCRIPT 2: STRAVA UPLOADER -->
+    <div class="section" id="strava-uploader">
+      <div class="section-header">
+        <div class="section-num">02</div>
+        <div class="section-meta">
+          <div class="section-tag tag-strava">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            STRAVA_UPLOAD.PY
+          </div>
+          <h2 class="section-title">STRAVA UPLOADER</h2>
+          <p class="section-desc">Takes the FIT files downloaded by the Garmin script and bulk-uploads them to Strava. Skips duplicates automatically. Supports resuming from a specific point or uploading individual picks.</p>
+        </div>
+      </div>
+
+      <div class="steps">
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">CREATE A STRAVA API APP</div>
+            <p class="step-desc">Go to <a href="https://www.strava.com/settings/api" target="_blank">strava.com/settings/api</a> and create a new app. Fill in:</p>
+            <p class="step-desc" style="margin-top:8px">
+              <strong>App Name:</strong> anything (e.g. <em>GarminImport</em>)<br>
+              <strong>Website:</strong> <code>https://localhost</code><br>
+              <strong>Authorization Callback Domain:</strong> <code>localhost</code>
+            </p>
+            <p class="step-desc" style="margin-top:8px">Copy your <strong>Client ID</strong> and <strong>Client Secret</strong> — you'll need them next.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">ADD YOUR CREDENTIALS TO THE SCRIPT</div>
+            <p class="step-desc">Open <code>strava_upload.py</code> and find these two lines near the top. Replace the placeholder values with your actual Client ID and Secret.</p>
+            <div class="code-block">
+              <div class="code-bar">
+                <div class="code-bar-left">
+                  <div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div>
+                  <span class="code-filename">strava_upload.py — credentials section</span>
+                </div>
+                <div class="code-bar-right">
+                  <button class="copy-btn" onclick="copyCode(this, 'CLIENT_ID     = &quot;YOUR_CLIENT_ID_HERE&quot;\nCLIENT_SECRET = &quot;YOUR_CLIENT_SECRET_HERE&quot;')">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    COPY
+                  </button>
+                </div>
+              </div>
+              <div class="code-preview">
+                <pre><span class="cmt"># ── Your Strava app credentials ──────────────</span>
+<span class="cls">CLIENT_ID</span>     <span class="op">=</span> <span class="str">"YOUR_CLIENT_ID_HERE"</span>
+<span class="cls">CLIENT_SECRET</span> <span class="op">=</span> <span class="str">"YOUR_CLIENT_SECRET_HERE"</span></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">RUN THE GARMIN DOWNLOADER FIRST</div>
+            <p class="step-desc">The upload script reads the <code>download_index.json</code> file created by the Garmin downloader. Make sure you've run <code>garmin_download.py</code> and the downloads are complete before proceeding.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">4</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">UPLOAD THE SCRIPT AND RUN IT</div>
+            <p class="step-desc">Upload <code>strava_upload.py</code> to your Colab session and run it in a new cell.</p>
+            <div class="code-block">
+              <div class="code-bar">
+                <div class="code-bar-left">
+                  <div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div>
+                  <span class="code-filename">colab cell</span>
+                </div>
+                <div class="code-bar-right">
+                  <button class="copy-btn" onclick="copyCode(this, '%run strava_upload.py')">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    COPY
+                  </button>
+                </div>
+              </div>
+              <div class="code-preview">
+                <pre><span class="op">%</span><span class="fn">run</span> strava_upload.py</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">5</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">AUTHORIZE STRAVA (ONE-TIME)</div>
+            <p class="step-desc">On the first run, the script prints an authorization URL. Open it in your browser, click <strong>Authorize</strong>, then copy the full redirect URL from the address bar (it starts with <code>http://localhost/...</code>) and paste it back into the cell input.</p>
+            <div class="step-note">
+              <span class="step-note-icon">💡</span>
+              <span>The page will show a browser error — that's normal. <code>localhost</code> isn't a real server. You just need the URL from the address bar before closing the tab.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">6</div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">CHOOSE UPLOAD MODE</div>
+            <p class="step-desc">The script shows a menu with 5 options:</p>
+            <p class="step-desc" style="margin-top:8px">
+              <code>[1]</code> Upload all remaining (skips already uploaded)<br>
+              <code>[2]</code> Start from a specific number<br>
+              <code>[3]</code> Upload specific activity numbers<br>
+              <code>[4]</code> Show full list first, then choose<br>
+              <code>[5]</code> Quit
+            </p>
+            <div class="step-note">
+              <span class="step-note-icon">♻️</span>
+              <span>Progress is saved after every upload. If the session disconnects, re-run and choose option <code>[2]</code> to resume from where you left off. Duplicates are detected and skipped automatically.</span>
+            </div>
+
+            <!-- FULL SCRIPT -->
+            <div class="code-block" style="margin-top:14px">
+              <div class="code-bar">
+                <div class="code-bar-left">
+                  <div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div>
+                  <span class="code-filename">strava_upload.py</span>
+                </div>
+                <div class="code-bar-right">
+                  <button class="code-toggle-btn" id="tog-strava" onclick="toggleCode('strava-full','tog-strava')">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    EXPAND
+                  </button>
+                  <button class="copy-btn" onclick="copyScriptById(this, 'strava-full-code')">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    COPY ALL
+                  </button>
+                </div>
+              </div>
+              <div class="code-preview">
+                <pre><span class="cmt"># ─── GARMIN ACTIVITIES → STRAVA AUTO-UPLOADER ───────────</span>
+<span class="cmt"># Run with: %run strava_upload.py</span>
+
+<span class="kw">import</span> json, time
+<span class="kw">from</span> pathlib <span class="kw">import</span> Path
+<span class="kw">from</span> datetime <span class="kw">import</span> datetime
+<span class="kw">from</span> urllib.parse <span class="kw">import</span> urlencode, urlparse, parse_qs
+<span class="kw">import</span> requests</pre>
+                <div class="code-fade"></div>
+              </div>
+              <div class="code-expanded-body" id="strava-full">
+                <pre id="strava-full-code">"""
+╔══════════════════════════════════════════════════════════════════╗
+║            GARMIN ACTIVITIES → STRAVA AUTO-UPLOADER             ║
+║                    Google Colab Edition  (v3)                   ║
+╚══════════════════════════════════════════════════════════════════╝
+Run with:  %run strava_upload.py
+"""
+
+# !pip install requests --quiet
+
+import json, time
+from pathlib import Path
+from datetime import datetime
+from urllib.parse import urlencode, urlparse, parse_qs
+import requests
+
+GARMIN_DIR = Path("/content/GarminActivities")
+TOKEN_FILE = Path("/content/strava_token.json")
+
+# ── ADD YOUR STRAVA APP CREDENTIALS HERE ──────────────────────────
+CLIENT_ID     = "YOUR_CLIENT_ID_HERE"
+CLIENT_SECRET = "YOUR_CLIENT_SECRET_HERE"
+
+STRAVA_AUTH_URL   = "https://www.strava.com/oauth/authorize"
+STRAVA_TOKEN_URL  = "https://www.strava.com/oauth/token"
+STRAVA_UPLOAD_URL = "https://www.strava.com/api/v3/uploads"
+
+DELAY_BETWEEN = 3
+POLL_INTERVAL = 4
+POLL_MAX      = 15
+
+def save_token(token):
+    with open(TOKEN_FILE, "w") as f:
+        json.dump(token, f, indent=2)
+
+def do_refresh(refresh_tok):
+    resp = requests.post(STRAVA_TOKEN_URL, data={
+        "client_id": CLIENT_ID, "client_secret": CLIENT_SECRET,
+        "refresh_token": refresh_tok, "grant_type": "refresh_token",
+    })
+    resp.raise_for_status()
+    token = resp.json()
+    save_token(token)
+    return token
+
+def get_valid_token():
+    if TOKEN_FILE.exists():
+        with open(TOKEN_FILE) as f:
+            token = json.load(f)
+        if "activity:write" in token.get("scope", ""):
+            if token.get("expires_at", 0) > time.time() + 60:
+                print("✅ Using cached Strava token")
+                return token
+            print("🔄 Refreshing token …")
+            token = do_refresh(token["refresh_token"])
+            return token
+        print("⚠️  Token missing activity:write scope — re-authorizing …")
+    params = {
+        "client_id": CLIENT_ID, "response_type": "code",
+        "redirect_uri": "http://localhost/exchange_token",
+        "approval_prompt": "force",
+        "scope": "activity:write,activity:read_all",
+    }
+    auth_url = f"{STRAVA_AUTH_URL}?{urlencode(params)}"
+    print("\n" + "═"*65)
+    print("  STRAVA AUTHORIZATION — one-time setup")
+    print("═"*65)
+    print(f"\n1️⃣  Open this URL:\n\n   {auth_url}")
+    print("\n2️⃣  Click Authorize.")
+    print("\n3️⃣  Copy the full redirect URL (starts with http://localhost/...)")
+    print("═"*65)
+    redirect = input("\nPaste the full redirect URL: ").strip()
+    code = parse_qs(urlparse(redirect).query).get("code", [None])[0]
+    if not code:
+        raise ValueError("❌ No code found — copy the full URL.")
+    resp = requests.post(STRAVA_TOKEN_URL, data={
+        "client_id": CLIENT_ID, "client_secret": CLIENT_SECRET,
+        "code": code, "grant_type": "authorization_code",
+    })
+    resp.raise_for_status()
+    token = resp.json()
+    save_token(token)
+    a = token.get("athlete", {})
+    print(f"\n✅ Authorized as: {a.get('firstname','')} {a.get('lastname','')}")
+    return token
+
+class RateLimitError(Exception): pass
+
+def upload_fit(access_token, fit_path, name):
+    headers = {"Authorization": f"Bearer {access_token}"}
+    with open(fit_path, "rb") as f:
+        resp = requests.post(STRAVA_UPLOAD_URL, headers=headers,
+            files={"file": (fit_path.name, f, "application/octet-stream")},
+            data={"data_type": "fit", "name": name, "sport_type": "Run"})
+    if resp.status_code == 429: raise RateLimitError("Rate limit hit")
+    resp.raise_for_status()
+    upload_id = resp.json()["id"]
+    for _ in range(POLL_MAX):
+        time.sleep(POLL_INTERVAL)
+        status = requests.get(f"{STRAVA_UPLOAD_URL}/{upload_id}", headers=headers).json()
+        if status.get("error"):
+            return {"status": "error", "error": status["error"], "upload_id": upload_id}
+        if status.get("activity_id"):
+            return {"status": "success", "strava_activity_id": status["activity_id"], "upload_id": upload_id}
+    return {"status": "timeout", "upload_id": upload_id}
+
+def discover_activities():
+    index_path = GARMIN_DIR / "download_index.json"
+    if not index_path.exists():
+        raise FileNotFoundError(f"No download_index.json — run garmin_download.py first.")
+    with open(index_path) as f: index = json.load(f)
+    activities = []
+    for e in index.get("activities", []):
+        fit = e.get("files", {}).get("fit")
+        if fit and Path(fit).exists():
+            activities.append({"activity_id": str(e["activity_id"]), "name": e.get("name","Run"),
+                                "start_time": e.get("start_time","?"), "fit_path": Path(fit)})
+    return activities
+
+def prompt_upload_mode(activities, upload_log):
+    already_done = sum(1 for a in activities
+                       if upload_log.get(a["activity_id"], {}).get("status") == "success")
+    print(f"\n📊 {len(activities)} activities  |  {already_done} already uploaded\n")
+    print("  [1] Upload ALL remaining")
+    print("  [2] Start from a specific number")
+    print("  [3] Upload specific numbers")
+    print("  [4] Show full list first")
+    print("  [5] Quit\n")
+    choice = input("Enter choice [1-5]: ").strip()
+    if choice == "1":
+        return [a for a in activities if upload_log.get(a["activity_id"],{}).get("status") != "success"]
+    elif choice == "2":
+        n = int(input(f"Start from number (1–{len(activities)}): ").strip())
+        return [a for a in activities[n-1:] if upload_log.get(a["activity_id"],{}).get("status") != "success"]
+    elif choice == "3":
+        nums = [int(x.strip()) for x in input("Numbers (comma-separated): ").split(",")]
+        return [activities[n-1] for n in nums]
+    elif choice == "4":
+        for i, a in enumerate(activities, 1):
+            st = upload_log.get(a["activity_id"], {}).get("status","—")
+            print(f"  {i:>4}  {a['start_time'][:10]}  {a['name'][:40]}  {st}")
+        return prompt_upload_mode(activities, upload_log)
+    else:
+        return []
+
+def run_uploads(to_upload, upload_log, log_path, token):
+    access_token = token["access_token"]
+    ok = dupes = err = 0
+    print(f"⬆️  Uploading {len(to_upload)} activities …\n{'─'*65}")
+    for i, act in enumerate(to_upload, 1):
+        aid, name = act["activity_id"], act["name"]
+        print(f"[{i:>4}/{len(to_upload)}] {act['start_time'][:10]} | {name[:40]:<40}", end="  … ")
+        try:
+            result = upload_fit(access_token, act["fit_path"], name)
+            upload_log[aid] = {**result, "uploaded_at": datetime.now().isoformat(), "name": name}
+            if result["status"] == "success":
+                print(f"✅  strava.com/activities/{result['strava_activity_id']}"); ok += 1
+            elif result["status"] == "error":
+                e = result.get("error","")
+                if "duplicate" in e.lower(): print("⏭️  duplicate"); dupes += 1
+                else: print(f"❌  {e}"); err += 1
+            else: print("⏳  timeout"); err += 1
+        except RateLimitError:
+            print("🚫 Rate limit — pausing 15 minutes …")
+            log_path.write_text(json.dumps(upload_log, indent=2))
+            time.sleep(900)
+            continue
+        except Exception as e:
+            print(f"❌  {e}"); err += 1
+        log_path.write_text(json.dumps(upload_log, indent=2))
+        time.sleep(DELAY_BETWEEN)
+    print(f"\n{'─'*65}")
+    print(f"🏁 Done!  ✅ {ok} uploaded  |  ⏭️  {dupes} duplicates  |  ❌ {err} errors")
+
+def main():
+    log_path   = GARMIN_DIR / "strava_upload_log.json"
+    upload_log = json.loads(log_path.read_text()) if log_path.exists() else {}
+    token      = get_valid_token()
+    activities = discover_activities()
+    if not activities:
+        print("⚠️  No .fit files found — run garmin_download.py first.")
+        return
+    to_upload = prompt_upload_mode(activities, upload_log)
+    if to_upload:
+        run_uploads(to_upload, upload_log, log_path, token)
+
+if __name__ == "__main__":
+    main()</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- SCRIPT 3: VISIBILITY CHANGER -->
+    <div class="section" id="visibility-changer">
+      <div class="section-header">
+        <div class="section-num">03</div>
+        <div class="section-meta">
+          <div class="section-tag tag-tools">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83"/></svg>
+            STRAVA_VISIBILITY.PY
+          </div>
+          <h2 class="section-title">VISIBILITY CHANGER</h2>
+          <p class="section-desc">Connects to your Strava account and bulk-changes the visibility of all activities of a chosen type — to public, followers only, or private. Smart skips activities already at the target visibility.</p>
+        </div>
+      </div>
+
+      <div class="steps">
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">1</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">ADD YOUR STRAVA CREDENTIALS</div>
+            <p class="step-desc">Open <code>strava_visibility.py</code> and update the credentials at the top of the script. Use the same Strava API app you created for the uploader.</p>
+            <div class="code-block">
+              <div class="code-bar">
+                <div class="code-bar-left">
+                  <div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div>
+                  <span class="code-filename">strava_visibility.py — credentials</span>
+                </div>
+                <div class="code-bar-right">
+                  <button class="copy-btn" onclick="copyCode(this, 'CLIENT_ID     = &quot;YOUR_CLIENT_ID_HERE&quot;\nCLIENT_SECRET = &quot;YOUR_CLIENT_SECRET_HERE&quot;')">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    COPY
+                  </button>
+                </div>
+              </div>
+              <div class="code-preview">
+                <pre><span class="cls">CLIENT_ID</span>     <span class="op">=</span> <span class="str">"YOUR_CLIENT_ID_HERE"</span>
+<span class="cls">CLIENT_SECRET</span> <span class="op">=</span> <span class="str">"YOUR_CLIENT_SECRET_HERE"</span></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">2</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">UPLOAD AND RUN</div>
+            <p class="step-desc">Upload <code>strava_visibility.py</code> to Colab and run it. No extra <code>pip install</code> needed — it only uses the built-in <code>requests</code> library.</p>
+            <div class="code-block">
+              <div class="code-bar">
+                <div class="code-bar-left">
+                  <div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div>
+                  <span class="code-filename">colab cell</span>
+                </div>
+                <div class="code-bar-right">
+                  <button class="copy-btn" onclick="copyCode(this, '%run strava_visibility.py')">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    COPY
+                  </button>
+                </div>
+              </div>
+              <div class="code-preview">
+                <pre><span class="op">%</span><span class="fn">run</span> strava_visibility.py</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">3</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">AUTHORIZE STRAVA (ONE-TIME)</div>
+            <p class="step-desc">A styled authorization card appears with a button. Click <strong>Authorize on Strava</strong>, approve the app, then copy the full <code>http://localhost/...</code> URL from your browser and paste it into the input field below the card.</p>
+            <div class="step-note">
+              <span class="step-note-icon">💾</span>
+              <span>The token is saved to <code>/content/strava_visibility_token.json</code>. On future runs it refreshes automatically — no need to authorize again.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">4</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">SELECT ACTIVITY TYPE</div>
+            <p class="step-desc">A numbered menu appears with 16 activity types. Pick the type you want to change, or choose <code>[0] ALL</code> to affect every activity on your account.</p>
+            <p class="step-desc" style="margin-top:6px;font-family:'JetBrains Mono',monospace;font-size:11.5px;color:var(--muted2);line-height:2">
+              [1] Run &nbsp; [2] TrailRun &nbsp; [3] VirtualRun &nbsp; [4] Walk &nbsp; [5] Hike<br>
+              [6] Ride &nbsp; [7] VirtualRide &nbsp; [8] Swim &nbsp; [9] Workout &nbsp; [10] WeightTraining<br>
+              [11] Yoga &nbsp; [12] Rowing &nbsp; ... &nbsp; [0] ALL
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">5</div>
+            <div class="step-line"></div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">SELECT TARGET VISIBILITY</div>
+            <p class="step-desc">Choose what visibility to set:</p>
+            <p class="step-desc" style="margin-top:8px">
+              <code>[1]</code> 🌍 <strong>everyone</strong> — fully public<br>
+              <code>[2]</code> 👥 <strong>followers_only</strong> — only your followers<br>
+              <code>[3]</code> 🔒 <strong>only_me</strong> — private
+            </p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col">
+            <div class="step-circle">6</div>
+          </div>
+          <div class="step-body">
+            <div class="step-title">CONFIRM AND WATCH IT RUN</div>
+            <p class="step-desc">A preview table shows the first 10 matching activities and their current visibility. Activities already at the target visibility are counted and skipped. Type <code>YES</code> to confirm, then watch the progress bar as each activity is updated.</p>
+            <div class="step-note">
+              <span class="step-note-icon">⚡</span>
+              <span>The script auto-pauses for 15 minutes every 90 requests to stay under Strava's rate limit. For large accounts this may take a while — keep the Colab tab active.</span>
+            </div>
+
+            <!-- FULL SCRIPT -->
+            <div class="code-block" style="margin-top:14px">
+              <div class="code-bar">
+                <div class="code-bar-left">
+                  <div class="code-dots"><div class="code-dot dot-r"></div><div class="code-dot dot-y"></div><div class="code-dot dot-g"></div></div>
+                  <span class="code-filename">strava_visibility.py</span>
+                </div>
+                <div class="code-bar-right">
+                  <button class="code-toggle-btn" id="tog-vis" onclick="toggleCode('vis-full','tog-vis')">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    EXPAND
+                  </button>
+                  <button class="copy-btn" onclick="copyScriptById(this, 'vis-full-code')">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                    COPY ALL
+                  </button>
+                </div>
+              </div>
+              <div class="code-preview">
+                <pre><span class="cmt"># ─── STRAVA BULK VISIBILITY CHANGER ────────────────────</span>
+<span class="kw">import</span> requests, time, json
+<span class="kw">from</span> IPython.display <span class="kw">import</span> display, HTML
+
+<span class="cls">CLIENT_ID</span>     <span class="op">=</span> <span class="str">"YOUR_CLIENT_ID_HERE"</span>
+<span class="cls">CLIENT_SECRET</span> <span class="op">=</span> <span class="str">"YOUR_CLIENT_SECRET_HERE"</span></pre>
+                <div class="code-fade"></div>
+              </div>
+              <div class="code-expanded-body" id="vis-full">
+                <pre id="vis-full-code">"""
+╔══════════════════════════════════════════════════════════════════╗
+║         STRAVA BULK VISIBILITY CHANGER  ·  Google Colab         ║
+║  Changes the visibility of all activities of a chosen type      ║
+╚══════════════════════════════════════════════════════════════════╝
+"""
+
+import requests, time, json
+from IPython.display import display, HTML
+
+# ── ADD YOUR STRAVA APP CREDENTIALS HERE ──────────────────────────
+CLIENT_ID     = "YOUR_CLIENT_ID_HERE"
+CLIENT_SECRET = "YOUR_CLIENT_SECRET_HERE"
+
+TOKEN_FILE = "/content/strava_visibility_token.json"
+AUTH_URL   = "https://www.strava.com/oauth/authorize"
+TOKEN_URL  = "https://www.strava.com/oauth/token"
+API_BASE   = "https://www.strava.com/api/v3"
+
+REQUESTS_PER_15MIN = 90
+DELAY_BETWEEN      = 0.7
+RATE_PAUSE         = 900
+
+ACTIVITY_TYPES = {
+    "1":  ("Run","🏃 Running"),  "2": ("TrailRun","🌲 Trail Running"),
+    "3":  ("VirtualRun","🖥️ Virtual Run"), "4": ("Walk","🚶 Walking"),
+    "5":  ("Hike","⛰️ Hiking"),  "6": ("Ride","🚴 Cycling"),
+    "7":  ("VirtualRide","🖥️ Virtual Ride"), "8": ("Swim","🏊 Swimming"),
+    "9":  ("Workout","💪 Workout"), "10": ("WeightTraining","🏋️ Weight Training"),
+    "11": ("Yoga","🧘 Yoga"), "12": ("Rowing","🚣 Rowing"),
+    "13": ("Kayaking","🛶 Kayaking"), "14": ("Soccer","⚽ Soccer"),
+    "15": ("Tennis","🎾 Tennis"), "16": ("Golf","⛳ Golf"),
+    "0":  ("ALL","🌐 ALL activity types"),
+}
+
+VISIBILITY_OPTIONS = {
+    "1": ("everyone",       "🌍 Public — visible to everyone"),
+    "2": ("followers_only", "👥 Followers only"),
+    "3": ("only_me",        "🔒 Private — only you"),
+}
+
+def load_token():
+    try:
+        with open(TOKEN_FILE) as f: tok = json.load(f)
+        if tok.get("expires_at", 0) < time.time() + 60:
+            tok = refresh_token(tok["refresh_token"])
+        return tok
+    except: return None
+
+def refresh_token(refresh_tok):
+    resp = requests.post(TOKEN_URL, data={
+        "client_id": CLIENT_ID, "client_secret": CLIENT_SECRET,
+        "grant_type": "refresh_token", "refresh_token": refresh_tok,
+    })
+    resp.raise_for_status()
+    tok = resp.json()
+    with open(TOKEN_FILE, "w") as f: json.dump(tok, f)
+    print("✅ Token refreshed")
+    return tok
+
+def authorize():
+    redirect_uri = "http://localhost"
+    auth_link = (f"{AUTH_URL}?client_id={CLIENT_ID}&response_type=code"
+                 f"&redirect_uri={redirect_uri}&approval_prompt=auto"
+                 f"&scope=activity:read_all,activity:write")
+    display(HTML(f"""
+    <div style="font-family:monospace;background:#111;border:2px solid #FC4C02;border-radius:10px;padding:22px;color:#eee;max-width:620px">
+      <div style="color:#FC4C02;font-size:20px;font-weight:bold;letter-spacing:2px;margin-bottom:14px">🔗 STRAVA AUTHORIZATION — 3 STEPS</div>
+      <div style="background:#1a1a1a;border-radius:7px;padding:14px;margin-bottom:12px">
+        <div style="color:#f5a623;font-size:12px;font-weight:bold;margin-bottom:8px">STEP 1 — CLICK THIS BUTTON</div>
+        <a href="{auth_link}" target="_blank" style="display:inline-block;background:#FC4C02;color:white;padding:10px 24px;border-radius:6px;text-decoration:none;font-weight:bold">AUTHORIZE ON STRAVA ↗</a>
+      </div>
+      <div style="background:#1a1a1a;border-radius:7px;padding:14px;margin-bottom:12px">
+        <div style="color:#f5a623;font-size:12px;font-weight:bold;margin-bottom:6px">STEP 2 — COPY THE REDIRECT URL</div>
+        <div style="color:#aaa;font-size:12px">After clicking Authorize, copy the full URL from your browser address bar.<br>It looks like: <code style="color:#a8ff3e">http://localhost/?state=&code=abc123...&scope=...</code></div>
+      </div>
+      <div style="background:#1a1a1a;border-radius:7px;padding:14px;">
+        <div style="color:#f5a623;font-size:12px;font-weight:bold;margin-bottom:6px">STEP 3 — PASTE BELOW ↓</div>
+        <div style="color:#aaa;font-size:12px">Scroll down — there is a text input field waiting for you.</div>
+      </div>
+    </div>"""))
+    print("\n" + "▼"*60)
+    print("  PASTE THE REDIRECT URL INTO THE BOX BELOW AND PRESS ENTER")
+    print("▼"*60)
+    redirect_resp = input("  Redirect URL → ").strip()
+    from urllib.parse import urlparse, parse_qs
+    code = parse_qs(urlparse(redirect_resp).query).get("code", [None])[0]
+    if not code: raise ValueError("❌ No code found in URL.")
+    resp = requests.post(TOKEN_URL, data={
+        "client_id": CLIENT_ID, "client_secret": CLIENT_SECRET,
+        "grant_type": "authorization_code", "code": code,
+        "redirect_uri": redirect_uri,
+    })
+    resp.raise_for_status()
+    tok = resp.json()
+    with open(TOKEN_FILE, "w") as f: json.dump(tok, f)
+    athlete = tok.get("athlete", {})
+    name = f"{athlete.get('firstname','')} {athlete.get('lastname','')}".strip()
+    print(f"\n✅ Authorized as: {name}")
+    return tok
+
+# ── AUTH ──────────────────────────────────────────────────────────
+print("🔐 Checking Strava authorization...")
+token = load_token()
+if token:
+    athlete = requests.get(f"{API_BASE}/athlete",
+              headers={"Authorization": f"Bearer {token['access_token']}"}).json()
+    print(f"✅ Already authorized as: {athlete.get('firstname','')} {athlete.get('lastname','')}")
+else:
+    token = authorize()
+ACCESS_TOKEN = token["access_token"]
+HEADERS = {"Authorization": f"Bearer {ACCESS_TOKEN}"}
+
+# ── SELECT ACTIVITY TYPE ──────────────────────────────────────────
+print("\n" + "═"*56 + "\n  ACTIVITY TYPE\n" + "═"*56)
+for k, (_, label) in ACTIVITY_TYPES.items():
+    print(f"  [{k:>2}]  {label}")
+while True:
+    type_choice = input("\nEnter number: ").strip()
+    if type_choice in ACTIVITY_TYPES: break
+    print("  ⚠ Invalid choice")
+chosen_type, chosen_type_label = ACTIVITY_TYPES[type_choice]
+
+# ── SELECT VISIBILITY ─────────────────────────────────────────────
+print("\n" + "═"*56 + "\n  SET VISIBILITY TO\n" + "═"*56)
+for k, (_, label) in VISIBILITY_OPTIONS.items():
+    print(f"  [{k}]  {label}")
+while True:
+    vis_choice = input("\nEnter number: ").strip()
+    if vis_choice in VISIBILITY_OPTIONS: break
+    print("  ⚠ Invalid choice")
+chosen_visibility, chosen_vis_label = VISIBILITY_OPTIONS[vis_choice]
+
+# ── CONFIRM ───────────────────────────────────────────────────────
+print(f"\n  Activity type : {chosen_type_label}")
+print(f"  New visibility: {chosen_vis_label}")
+if input("\n  Type YES to proceed: ").strip().upper() != "YES":
+    print("  ⛔ Cancelled."); raise SystemExit
+
+# ── FETCH ACTIVITIES ──────────────────────────────────────────────
+print("\n📡 Fetching your Strava activities...")
+all_acts, page = [], 1
+while True:
+    resp = requests.get(f"{API_BASE}/athlete/activities",
+                        headers=HEADERS, params={"per_page": 200, "page": page})
+    if resp.status_code == 429: time.sleep(RATE_PAUSE); continue
+    resp.raise_for_status()
+    batch = resp.json()
+    if not batch: break
+    for act in batch:
+        atype = act.get("sport_type") or act.get("type") or ""
+        if chosen_type == "ALL" or atype == chosen_type:
+            all_acts.append(act)
+    print(f"  Scanned {(page-1)*200+len(batch)} activities, matched {len(all_acts)} so far...", end="\r")
+    if len(batch) < 200: break
+    page += 1
+    time.sleep(DELAY_BETWEEN)
+print(f"\n✅ Found {len(all_acts)} matching activities")
+
+needs_update = [a for a in all_acts if a.get("visibility") != chosen_visibility]
+already_correct = len(all_acts) - len(needs_update)
+print(f"\n  Already correct: {already_correct}")
+print(f"  Need updating  : {len(needs_update)}")
+if not needs_update:
+    print(f"\n✅ All activities already set to '{chosen_visibility}'."); raise SystemExit
+
+if input(f"\n🚀 Update {len(needs_update)} activities? Press ENTER (or type SKIP): ").strip().upper() == "SKIP":
+    raise SystemExit
+
+# ── UPDATE ────────────────────────────────────────────────────────
+success_count = fail_count = request_count = 0
+for i, act in enumerate(needs_update):
+    act_id = act["id"]
+    title  = act.get("name","Untitled")[:40]
+    if request_count > 0 and request_count % REQUESTS_PER_15MIN == 0:
+        print(f"\n⏳ Rate limit guard — pausing 15 min...")
+        time.sleep(RATE_PAUSE)
+    resp = requests.put(f"{API_BASE}/activities/{act_id}",
+                        headers=HEADERS, json={"visibility": chosen_visibility})
+    request_count += 1
+    if resp.status_code == 429:
+        time.sleep(RATE_PAUSE)
+        resp = requests.put(f"{API_BASE}/activities/{act_id}",
+                            headers=HEADERS, json={"visibility": chosen_visibility})
+    if resp.ok:
+        success_count += 1
+        pct = int((i+1)/len(needs_update)*30)
+        bar = "█"*pct + "░"*(30-pct)
+        print(f"  ✅ [{bar}] {i+1}/{len(needs_update)}  {title[:28]}", end="\r")
+    else:
+        fail_count += 1
+        print(f"\n  ❌ FAILED [{i+1}] HTTP {resp.status_code}  {title}")
+    time.sleep(DELAY_BETWEEN)
+
+print(f"\n\n{'═'*56}\n  🏁 DONE\n{'═'*56}")
+print(f"  Updated: {success_count}  |  Skipped: {already_correct}  |  Failed: {fail_count}")
+vis_icon = {"everyone":"🌍","followers_only":"👥","only_me":"🔒"}.get(chosen_visibility,"")
+print(f"\n  {vis_icon}  All {chosen_type_label} activities are now: {chosen_vis_label}\n")</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- TROUBLESHOOTING -->
+    <div class="section" id="troubleshooting">
+      <div class="section-header">
+        <div class="section-num">04</div>
+        <div class="section-meta">
+          <div class="section-tag tag-garmin">// COMMON ISSUES</div>
+          <h2 class="section-title">TROUBLESHOOTING</h2>
+        </div>
+      </div>
+
+      <div class="steps">
+
+        <div class="step">
+          <div class="step-num-col"><div class="step-circle">?</div><div class="step-line"></div></div>
+          <div class="step-body">
+            <div class="step-title">COLAB DISCONNECTS MID-DOWNLOAD</div>
+            <p class="step-desc">Already downloaded activities are preserved in <code>/content/GarminActivities/</code>. Just re-run <code>garmin_download.py</code> — it picks up from where it left off. For uploads, use option <code>[2]</code> to start from a specific activity number.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col"><div class="step-circle">?</div><div class="step-line"></div></div>
+          <div class="step-body">
+            <div class="step-title">GARMIN MFA CODE NOT ARRIVING</div>
+            <p class="step-desc">Check your spam folder. The code is sent to the email address associated with your Garmin account. You have about 5 minutes to enter it before it expires. If it expires, just re-run the script to get a new one.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col"><div class="step-circle">?</div><div class="step-line"></div></div>
+          <div class="step-body">
+            <div class="step-title">STRAVA "NO CODE FOUND" ERROR</div>
+            <p class="step-desc">Make sure you copied the <em>full</em> URL from your browser, including the <code>?state=&code=...</code> part. The browser may truncate it if you single-click — triple-click the address bar to select all, then copy.</p>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="step-num-col"><div class="step-circle">?</div></div>
+          <div class="step-body">
+            <div class="step-title">STRAVA RATE LIMIT (429 ERROR)</div>
+            <p class="step-desc">Strava allows 100 API requests per 15 minutes. All three scripts handle this automatically by pausing and resuming. If you're running multiple scripts simultaneously, pause one while the other is active.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // ── COPY INLINE CODE ────────────────────────────────────────────
+  function copyCode(btn, text) {
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> COPIED`;
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> COPY`;
+      }, 2000);
+    });
+  }
+
+  // ── COPY FULL SCRIPT ────────────────────────────────────────────
+  function copyScriptById(btn, preId) {
+    const text = document.getElementById(preId).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      btn.classList.add('copied');
+      btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> COPIED`;
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.innerHTML = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> COPY ALL`;
+      }, 2000);
+    });
+  }
+
+  // ── TOGGLE CODE EXPAND ──────────────────────────────────────────
+  function toggleCode(bodyId, btnId) {
+    const body = document.getElementById(bodyId);
+    const btn  = document.getElementById(btnId);
+    const open = body.classList.toggle('open');
+    btn.classList.toggle('expanded', open);
+    btn.innerHTML = open
+      ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg> COLLAPSE`
+      : `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg> EXPAND`;
+  }
+
+  // ── SIDEBAR ACTIVE LINK ─────────────────────────────────────────
+  const sections = document.querySelectorAll('.section, .page-header');
+  const navLinks = document.querySelectorAll('.nav-link');
+
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(link => {
+          link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+        });
+      }
+    });
+  }, { threshold: 0.25 });
+
+  document.querySelectorAll('[id]').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
